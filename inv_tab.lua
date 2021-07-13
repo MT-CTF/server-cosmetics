@@ -70,7 +70,7 @@ sfinv.register_page("server_cosmetics:customize", {
 
 		if not pteam then return end
 		if not context.customize then context.customize = {colors = {}} end
-		minetest.log("error", dump(fields))
+
 		for fieldname, color in pairs(fields) do
 			local clothing = fieldname:match("(.+)_color")
 
@@ -78,14 +78,10 @@ sfinv.register_page("server_cosmetics:customize", {
 				local new_extra = false
 				color = context.customize.colors[clothing][tonumber(color) or 1]
 
-				minetest.log(dump(clothing).." [-] "..dump(color).." = "..(server_cosmetics.can_use(player, clothing, color) == true and "true" or "false"))
-
 				if fields[clothing] == "false" then
 					new_extra = {_remove = {clothing}}
 				elseif server_cosmetics.can_use(player, clothing, color) then
 					local current = ctf_cosmetics.get_extra_clothing(player)
-
-					minetest.log(dump(current).." <-> "..dump(clothing)..": "..dump(fields[clothing]))
 
 					if current[clothing] or fields[clothing] == "true" then
 						new_extra = {[clothing] = context.customize.colors[clothing][color]}
