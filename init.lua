@@ -31,12 +31,17 @@ end
 
 minetest.register_on_joinplayer(function(player)
 	local current = ctf_cosmetics.get_extra_clothing(player)
+	local pteam = ctf_teams.get(player)
 
 	if not current.hair then
 		ctf_cosmetics.set_extra_clothing(player, {
 			hair = server_cosmetics.default_cosmetics.hair["brown"],
 			eyes = server_cosmetics.default_cosmetics.eyes["blue"],
 		})
+
+		if pteam then -- Skin has already been set by team allocation, update it
+			player:set_properties({textures = {ctf_cosmetics.get_colored_skin(player, ctf_teams.team[pteam].color)}})
+		end
 	end
 end)
 

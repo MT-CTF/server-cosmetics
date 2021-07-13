@@ -48,7 +48,7 @@ sfinv.register_page("server_cosmetics:customize", {
 			[[
 				formspec_version[4]
 				box[0,-0.2;%f,%f;#00000055]
-				model[0,0.1;%f,%f;playerview;%s;%s;{0,160};;;%f,%f;10]
+				model[0,0.1;%f,%f;playerview;%s;%s;{0,160};;;%f,%f]
 
 				scrollbaroptions[min=0;max=%f]
 				scrollbar[%f,0;%f,%f;vertical;cosmetics_scrollbar;0]
