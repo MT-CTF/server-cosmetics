@@ -19,22 +19,25 @@ sfinv.register_page("server_cosmetics:customize", {
 			local colors = {}
 			context.customize.colors[clothing] = {}
 			local current_color_idx = 1
+			local prefix = clist._prefix or "Enable "
 
 			for colorname, color in pairs(clist) do
-				if current[clothing] == color then
-					current_color_idx = #colors + 1
-				end
+				if colorname:sub(1, 1) ~= "_" then
+					if current[clothing] == color then
+						current_color_idx = #colors + 1
+					end
 
-				table.insert(context.customize.colors[clothing], colorname)
-				context.customize.colors[clothing][colorname] = color
-				table.insert(colors, HumanReadable(colorname))
+					table.insert(context.customize.colors[clothing], colorname)
+					context.customize.colors[clothing][colorname] = color
+					table.insert(colors, HumanReadable(colorname))
+				end
 			end
 
 			cosmetics = string.format([[%s
 				checkbox[0.1,%f;%s;%s;%s]
 				dropdown[2.2,%f;2.3;%s;%s;%d;true]
 				]], cosmetics,
-				pos, clothing, "Modify "..HumanReadable(clothing), current[clothing] and "true" or "false",
+				pos, clothing, prefix..HumanReadable(clothing), current[clothing] and "true" or "false",
 				pos+0.09, clothing.."_color", table.concat(colors, ","), current_color_idx
 			)
 
