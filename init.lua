@@ -33,7 +33,7 @@ minetest.register_on_joinplayer(function(player)
 	local current = ctf_cosmetics.get_extra_clothing(player)
 	local pteam = ctf_teams.get(player)
 
-	if not current.hair then
+	if current._unset then
 		ctf_cosmetics.set_extra_clothing(player, {
 			hair = server_cosmetics.default_cosmetics.hair["brown"],
 			eyes = server_cosmetics.default_cosmetics.eyes["blue"],
