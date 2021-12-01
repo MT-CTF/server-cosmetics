@@ -1,4 +1,4 @@
-local FORMSIZE = {x = 8, y = 5}
+local FORMSIZE = {x = 8, y = 4.5}
 local SCROLLBAR = {width = 0.3}
 
 sfinv.register_page("server_cosmetics:customize", {
@@ -7,96 +7,179 @@ sfinv.register_page("server_cosmetics:customize", {
 		return ctf_teams.get(player) and true or false
 	end,
 	get = function(self, player, context)
+		local pname = player:get_player_name()
 		local current = ctf_cosmetics.get_extra_clothing(player)
 		local props = player:get_properties()
 		local walk_anim = player_api.registered_models[props.mesh].animations.walk
-		local cosmetics = ""
-		local pos = 0
+		local cosmetic_forms = ""
+		local pos = -0.4
+		local models = {
+			{mesh = props.mesh, textures = props.textures, anim_range = walk_anim}
+		}
+		local pteam = ctf_teams.get(player)
 
-		if not context.customize then context.customize = {colors = {}} end
+		if not pteam then return end
 
-		for clothing, clist in pairs(server_cosmetics.default_cosmetics) do
-			local colors = {}
-			context.customize.colors[clothing] = {}
-			local current_color_idx = 1
-			local prefix = clist._prefix or "Enable "
+		for category, contents in pairs(server_cosmetics.cosmetics) do
+			for ctype, cosmetics in pairs(contents) do
+				local available_cosmetics = {}
+				local readable_available_cosmetics = {}
+				local convert = {}
+				local info_to_name = {}
 
-			for colorname, color in pairs(clist) do
-				if colorname:sub(1, 1) ~= "_" then
-					if current[clothing] == color then
-						current_color_idx = #colors + 1
+				for name, info in pairs(cosmetics) do
+					if name:sub(1, 1) ~= "_" and server_cosmetics.can_use(player, ctype, name) then
+						table.insert(available_cosmetics, name)
+						table.insert(readable_available_cosmetics, HumanReadable(name))
+						convert[HumanReadable(name)] = name
+						info_to_name[info] = name
+					end
+				end
+
+				if #available_cosmetics >= 1 then
+					local element_name = string.format("%s:%s", category, ctype)
+
+					context["enable_"..element_name] = function(fields, enable)
+						if enable == "true" then
+							local selected = convert[fields["select_"..element_name]] or available_cosmetics[1]
+
+							local selected_color = cosmetics[selected]
+							if not server_cosmetics.can_use(player, ctype, selected) then
+								minetest.log("warning", "Player "..pname.." is trying to exploit the cosmetic formspecs")
+								return true
+							end
+
+							ctf_cosmetics.set_extra_clothing(player, { [ctype] = selected_color })
+						else
+							ctf_cosmetics.set_extra_clothing(player, { _remove = {ctype} })
+							current[ctype] = nil
+						end
+
+						player:set_properties({textures = {ctf_cosmetics.get_colored_skin(player, ctf_teams.team[pteam].color)}})
 					end
 
-					table.insert(context.customize.colors[clothing], colorname)
-					context.customize.colors[clothing][colorname] = color
-					table.insert(colors, HumanReadable(colorname))
+					context["select_"..element_name] = function(fields, selected)
+						if not current[ctype] then return true end
+						selected = convert[selected] or available_cosmetics[1]
+
+						local selected_color = cosmetics[selected]
+						if not server_cosmetics.can_use(player, ctype, selected) then
+							minetest.log("warning", "Player "..pname.." is trying to exploit the cosmetic formspecs")
+							return true
+						end
+
+						if current[ctype] == selected_color then return true end -- Already changed
+
+						ctf_cosmetics.set_extra_clothing(player, { [ctype] = selected_color })
+						player:set_properties({textures = {ctf_cosmetics.get_colored_skin(player, ctf_teams.team[pteam].color)}})
+					end
+
+					if cosmetics._model then
+						table.insert(models, {
+							mesh = cosmetics._model,
+							textures = {current[ctype] or cosmetics[available_cosmetics[1]]},
+							anim_range = cosmetics._anim_range or {x = 1, y = 1},
+						})
+					end
+
+					local selected = current[ctype] and table.indexof(available_cosmetics, info_to_name[current[ctype]])
+					if not selected or selected == -1 then
+						selected = 1
+					end
+					cosmetic_forms = string.format([[%s
+						checkbox[0,%f;enable_%s;%s;%s]
+						dropdown[0,%f;%f;select_%s;%s;%d]
+					]], cosmetic_forms,
+						--checkbox
+						pos, element_name, (cosmetics._prefix or "Enable ") .. (cosmetics._description or HumanReadable(ctype)),
+							current[ctype] and "true" or "false",
+						--dropdown
+						pos + 0.8, (FORMSIZE.x/2),
+							element_name, current[ctype] and table.concat(readable_available_cosmetics, ",") or "", selected
+					)
+
+					pos = pos + 1.8
 				end
 			end
+		end
 
-			cosmetics = string.format([[%s
-				checkbox[0.1,%f;%s;%s;%s]
-				dropdown[2.2,%f;2.3;%s;%s;%d;true]
-				]], cosmetics,
-				pos, clothing, prefix..HumanReadable(clothing), current[clothing] and "true" or "false",
-				pos+0.09, clothing.."_color", table.concat(colors, ","), current_color_idx
-			)
-
-			pos = pos + 0.8
+		if not context.model_selected or context.model_selected > #models then
+			context.model_selected = 1
 		end
 
 		local form = string.format(
 			[[
 				formspec_version[4]
+				real_coordiantes[true]
 				box[0,-0.2;%f,%f;#00000055]
-				model[0,0.1;%f,%f;playerview;%s;%s;{0,160};;;%f,%f]
+				model[0,0;%f,%f;playerview;%s;%s;{0,160};;;%f,%f]
+				image_button[0,%f;0.8,0.8;creative_prev_icon.png;model_prev;]
+				label[%f,%f;%d/%d]
+				image_button[%f,%f;0.8,0.8;creative_next_icon.png;model_next;]
 
 				scrollbaroptions[min=0;max=%f]
-				scrollbar[%f,0;%f,%f;vertical;cosmetics_scrollbar;0]
-				scroll_container[%f,0;%f,%f;cosmetics_scrollbar;vertical;0.1]
+				scrollbar[%f,-0.1;%f,%f;vertical;cosmetics_scrollbar;%f]
+				scroll_container[%f,0.3;%f,%f;cosmetics_scrollbar;vertical;0.1]
 					%s
 				scroll_container_end[]
 			]],
+			--box
 			(FORMSIZE.x/2) - 0.8, FORMSIZE.y,
-			FORMSIZE.x/2, FORMSIZE.y, props.mesh, table.concat(props.textures, ","), walk_anim.x, walk_anim.y,
+			--model
+			(FORMSIZE.x/2), FORMSIZE.y + 0.2, models[context.model_selected].mesh,
+				table.concat(models[context.model_selected].textures, ","),
+				models[context.model_selected].anim_range.x, models[context.model_selected].anim_range.y,
+			--image_button
+			FORMSIZE.y-0.1,
+			--label
+			(FORMSIZE.x/4) - 0.5, FORMSIZE.y, context.model_selected, #models,
+			--image_button
+			(FORMSIZE.x/2) - 1.39, FORMSIZE.y-0.1,
 
-			7 * 9,
-			FORMSIZE.x-SCROLLBAR.width, SCROLLBAR.width, FORMSIZE.y,
-			(FORMSIZE.x/2 + 0.1), 6.2 - SCROLLBAR.width, 5.91,
+			--scrollbaroptions
+			pos * 6,
+			--scrollbar
+			FORMSIZE.x-SCROLLBAR.width, SCROLLBAR.width, FORMSIZE.y + 0.6, context.scrollbar or 0,
+			--scroll_container
+			(FORMSIZE.x/2 + 0.3), 6 - SCROLLBAR.width, FORMSIZE.y + 1.4,
 
-			cosmetics
+			cosmetic_forms
 		)
 
 		return sfinv.make_formspec(player, context, form, true)
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
 		local pteam = ctf_teams.get(player)
+		local refresh = true
 
 		if not pteam then return end
-		if not context.customize then context.customize = {colors = {}} end
 
-		for fieldname, color in pairs(fields) do
-			local clothing = fieldname:match("(.+)_color")
+		if fields.model_next then
+			context.model_selected = context.model_selected + 1
+		elseif fields.model_prev then
+			context.model_selected = math.max(context.model_selected - 1, 1)
+		elseif not fields.quit then
+			refresh = false
+		end
 
-			if clothing and context.customize.colors[clothing] then
-				local new_extra = false
-				color = context.customize.colors[clothing][tonumber(color) or 1]
-
-				if fields[clothing] == "false" then
-					new_extra = {_remove = {clothing}}
-				elseif server_cosmetics.can_use(player, clothing, color) then
-					local current = ctf_cosmetics.get_extra_clothing(player)
-
-					if current[clothing] or fields[clothing] == "true" then
-						new_extra = {[clothing] = context.customize.colors[clothing][color]}
-					end
-				end
-
-				if new_extra then
-					ctf_cosmetics.set_extra_clothing(player, new_extra)
-					player:set_properties({textures = {ctf_cosmetics.get_colored_skin(player, ctf_teams.team[pteam].color)}})
+		for fieldname, info in pairs(fields) do
+			if context[fieldname] then
+				if not refresh and not context[fieldname](fields, info) then --not context[]() -> not no_refresh_needed()
+					refresh = true
 				end
 			end
 		end
+
+		if not refresh then return end
+
+		if fields.cosmetics_scrollbar then
+			local scrollevent = minetest.explode_scrollbar_event(fields.cosmetics_scrollbar)
+
+			if scrollevent.value then
+				context.scrollbar = scrollevent.value
+			end
+		end
+
 		sfinv.set_page(player, sfinv.get_page(player))
 	end,
 })

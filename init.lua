@@ -1,32 +1,80 @@
 server_cosmetics = {
-	default_cosmetics = {
-		hair = {
-			brown  = "#472E16",
-			black  = "#222"   ,
-			grey   = "#AAA"   ,
-			blonde = "#E6CC7C",
+	cosmetics = {
+		default_cosmetics = {
+			hair = {
+				brown  = "#472E16",
+				black  = "#222"   ,
+				grey   = "#AAA"   ,
+				blonde = "#E6CC7C",
+			},
+			eyes = {
+				blue  = "#2859C5",
+				green = "#477C47",
+				brown = "#2D1400",
+			},
+			skin = {
+				_prefix = "Modify ",
+				tan      = "#cca586",
+				dark_tan = "#6d4832",
+				brown    = "#412d1b",
+			}
 		},
-		eyes = {
-			blue  = "#2859C5",
-			green = "#477C47",
-			brown = "#2D1400",
-		},
-		skin = {
-			_prefix = "Modify ",
-			tan      = "#cca586",
-			dark_tan = "#6d4832",
-			brown    = "#412d1b",
+		entity_cosmetics = {
+			santa_hat = {
+				_prefix = "Wear ",
+				_description = "Christmas Hat",
+				_model = "server_cosmetics_santa_hat.b3d",
+				["2021"] = "server_cosmetics_santa_hat.png",
+			}
 		}
-	},
+	}
 }
 
-local old = ctf_cosmetics.get_clothing_texture
+local function include(file)
+	dofile(minetest.get_modpath(minetest.get_current_modname()).."/"..file)
+end
+
+include("santa_hat.lua")
+
+local hatted = {}
+local function update_entity_cosmetics(player, current)
+	player = PlayerObj(player)
+	if not player then return end
+
+	local pname = player:get_player_name()
+
+	if hatted[pname] then
+		hatted[pname]:remove()
+		hatted[pname] = nil
+	end
+
+	if current.santa_hat then
+		local hat = minetest.add_entity(player:get_pos(), "server_cosmetics:santa_hat")
+		hat:set_properties({textures = current.santa_hat})
+		hat:set_attach(player, "Head", vector.new(0, 2, 0))
+
+		hatted[pname] = hat
+	end
+end
+
+local old_set_extra_clothing = ctf_cosmetics.set_extra_clothing
+function ctf_cosmetics.set_extra_clothing(player, ...)
+	local ret = old_set_extra_clothing(player, ...)
+
+	update_entity_cosmetics(player, ctf_cosmetics.get_extra_clothing(player))
+
+	return ret
+end
+
+local old_get_clothing_texture = ctf_cosmetics.get_clothing_texture
 function ctf_cosmetics.get_clothing_texture(player, texture, ...)
 	if texture == "skin" then
 		return "server_cosmetics_skin.png"
-	else
-		return old(player, texture, ...)
+	elseif texture == "santa_hat" then
+		return false
 	end
+
+	return old_get_clothing_texture(player, texture, ...)
 end
 
 minetest.register_on_joinplayer(function(player)
@@ -35,29 +83,30 @@ minetest.register_on_joinplayer(function(player)
 
 	if current._unset then
 		ctf_cosmetics.set_extra_clothing(player, {
-			hair = server_cosmetics.default_cosmetics.hair["brown"],
-			eyes = server_cosmetics.default_cosmetics.eyes["blue"],
+			hair = server_cosmetics.cosmetics.default_cosmetics.hair["brown"],
+			eyes = server_cosmetics.cosmetics.default_cosmetics.eyes["blue"],
 		})
 
 		if pteam then -- Skin has already been set by team allocation, update it
 			player:set_properties({textures = {ctf_cosmetics.get_colored_skin(player, ctf_teams.team[pteam].color)}})
 		end
 	end
+
+	minetest.after(1, update_entity_cosmetics, player:get_player_name(), current)
 end)
 
 function server_cosmetics.can_use(player, clothing, color)
 	if not color then return false end
 
-	if server_cosmetics.default_cosmetics[clothing] and
-	server_cosmetics.default_cosmetics[clothing][color] then
+	local meta = player:get_meta()
+
+	if (server_cosmetics.cosmetics.default_cosmetics[clothing] and
+	server_cosmetics.cosmetics.default_cosmetics[clothing][color]) or
+	meta:get_int("server_cosmetics:entity:"..clothing..":"..color) ~= 0 then
 		return true
 	else
 		return false
 	end
-end
-
-local function include(file)
-	dofile(minetest.get_modpath(minetest.get_current_modname()).."/"..file)
 end
 
 include("inv_tab.lua")
