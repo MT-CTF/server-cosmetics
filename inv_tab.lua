@@ -3,9 +3,6 @@ local SCROLLBAR = {width = 0.3}
 
 sfinv.register_page("server_cosmetics:customize", {
 	title = "Customize",
-	is_in_nav = function(self, player)
-		return ctf_teams.get(player) and true or false
-	end,
 	get = function(self, player, context)
 		local pname = player:get_player_name()
 		local current = ctf_cosmetics.get_extra_clothing(player)
@@ -14,11 +11,8 @@ sfinv.register_page("server_cosmetics:customize", {
 		local cosmetic_forms = ""
 		local pos = -0.4
 		local models = {
-			{mesh = props.mesh, textures = props.textures, anim_range = walk_anim}
+			{mesh = props.mesh, texture = ctf_cosmetics.get_colored_skin(player), anim_range = walk_anim}
 		}
-		local pteam = ctf_teams.get(player)
-
-		if not pteam then return end
 
 		for category, contents in pairs(server_cosmetics.cosmetics) do
 			for ctype, cosmetics in pairs(contents) do
@@ -55,7 +49,7 @@ sfinv.register_page("server_cosmetics:customize", {
 							current[ctype] = nil
 						end
 
-						player:set_properties({textures = {ctf_cosmetics.get_colored_skin(player, ctf_teams.team[pteam].color)}})
+						player:set_properties({textures = {ctf_cosmetics.get_skin(player)}})
 					end
 
 					context["select_"..element_name] = function(fields, selected)
@@ -71,13 +65,13 @@ sfinv.register_page("server_cosmetics:customize", {
 						if current[ctype] == selected_color then return true end -- Already changed
 
 						ctf_cosmetics.set_extra_clothing(player, { [ctype] = selected_color })
-						player:set_properties({textures = {ctf_cosmetics.get_colored_skin(player, ctf_teams.team[pteam].color)}})
+						player:set_properties({textures = {ctf_cosmetics.get_skin(player)}})
 					end
 
 					if cosmetics._model then
 						table.insert(models, {
 							mesh = cosmetics._model,
-							textures = {current[ctype] or cosmetics[available_cosmetics[1]]},
+							texture = current[ctype] or cosmetics[available_cosmetics[1]],
 							anim_range = cosmetics._anim_range or {x = 1, y = 1},
 						})
 					end
@@ -127,7 +121,7 @@ sfinv.register_page("server_cosmetics:customize", {
 			(FORMSIZE.x/2) - 0.8, FORMSIZE.y,
 			--model
 			(FORMSIZE.x/2), FORMSIZE.y + 0.2, models[context.model_selected].mesh,
-				table.concat(models[context.model_selected].textures, ","),
+				models[context.model_selected].texture,
 				models[context.model_selected].anim_range.x, models[context.model_selected].anim_range.y,
 			--image_button
 			FORMSIZE.y-0.1,
@@ -149,10 +143,7 @@ sfinv.register_page("server_cosmetics:customize", {
 		return sfinv.make_formspec(player, context, form, true)
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
-		local pteam = ctf_teams.get(player)
 		local refresh = true
-
-		if not pteam then return end
 
 		if fields.model_next then
 			context.model_selected = context.model_selected + 1
@@ -183,7 +174,3 @@ sfinv.register_page("server_cosmetics:customize", {
 		sfinv.set_page(player, sfinv.get_page(player))
 	end,
 })
-
-ctf_teams.register_on_allocplayer(function(player)
-	sfinv.set_page(player, sfinv.get_page(player))
-end)

@@ -3,7 +3,7 @@ unused_args = false
 globals = {
 	"ctf_cosmetics", "sfinv", "player_api",
 
-	"server_cosmetics", "ctf_teams", "throwable_snow",
+	"server_cosmetics",
 
 	"HumanReadable", "PlayerName", "PlayerObj",
 
