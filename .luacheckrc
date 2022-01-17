@@ -1,7 +1,7 @@
 unused_args = false
 
 globals = {
-	"ctf_cosmetics", "sfinv", "player_api",
+	"ctf_cosmetics", "ctf_teams", "sfinv", "player_api",
 
 	"server_cosmetics",
 

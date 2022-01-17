@@ -10,8 +10,13 @@ sfinv.register_page("server_cosmetics:customize", {
 		local walk_anim = player_api.registered_models[props.mesh].animations.walk
 		local cosmetic_forms = ""
 		local pos = -0.4
+		local pteam = ctf_teams.get(pname)
 		local models = {
-			{mesh = props.mesh, texture = ctf_cosmetics.get_colored_skin(player), anim_range = walk_anim}
+			{
+				mesh = props.mesh,
+				texture = ctf_cosmetics.get_colored_skin(player, pteam and ctf_teams.team[pteam].color),
+				anim_range = walk_anim,
+			}
 		}
 
 		for category, contents in pairs(server_cosmetics.cosmetics) do
