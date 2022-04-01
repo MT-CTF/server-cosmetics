@@ -30,6 +30,10 @@ server_cosmetics = {
 	}
 }
 
+if os.date("%m/%d") == "04/01" then
+	server_cosmetics.cosmetics.default_cosmetics.skin.smurf = "#0085e8"
+end
+
 local function include(file)
 	dofile(minetest.get_modpath(minetest.get_current_modname()).."/"..file)
 end
