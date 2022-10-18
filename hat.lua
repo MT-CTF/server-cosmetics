@@ -1,7 +1,7 @@
-minetest.register_entity("server_cosmetics:santa_hat", {
+minetest.register_entity("server_cosmetics:hat", {
 	visual = "mesh",
-	mesh = "server_cosmetics_santa_hat.b3d",
-	textures = {"server_cosmetics_santa_hat.png"},
+	textures = {},
+	mesh = "server_cosmetics_hat.b3d",
 	physical = false,
 	makes_footstep_sound = false,
 	backface_culling = false,
@@ -12,7 +12,7 @@ minetest.register_entity("server_cosmetics:santa_hat", {
 	on_punch = function() return true end,
 	on_step = function(self, dtime)
 		self.timer = (self.timer or 0) + dtime
-		if self.timer < 0.3 then return end
+		if not self.animr or self.timer < 0.3 then return end
 		self.timer = 0
 
 		local player = self.object:get_attach()
@@ -27,14 +27,14 @@ minetest.register_entity("server_cosmetics:santa_hat", {
 
 		if movement ~= 0 then
 			if vel.y <= -12 then
-				self.object:set_animation({x = 15, y = 23}, 34)
+				self.object:set_animation(self.animr.falling, 40)
 				return
 			elseif movement ~= vel.y then
-				self.object:set_animation({x = 1, y = 13}, 16)
+				self.object:set_animation(self.animr.bumpy, 16)
 				return
 			end
 		end
 
-		self.object:set_animation({x = 1, y = 1}, 1)
+		self.object:set_animation(self.animr.idle, 2)
 	end
 })

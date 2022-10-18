@@ -23,8 +23,29 @@ server_cosmetics = {
 			santa_hat = {
 				_prefix = "Wear ",
 				_description = "Christmas Hat",
-				_model = "server_cosmetics_santa_hat.b3d",
+				_model = "server_cosmetics_hat.b3d",
+				_preview_rot = {350, 315},
+				_anims = {
+					idle = {x = 1, y = 1},
+					bumpy = {x = 1, y = 14},
+					falling = {x = 15, y = 23},
+				},
 				["2021"] = "server_cosmetics_santa_hat.png",
+				["2022"] = "server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:green)",
+				["2023"] = "server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:purple)",
+			},
+			hallows_hat = {
+				_prefix = "Wear ",
+				_description = "Hallows Hat",
+				_model = "server_cosmetics_hat.b3d",
+				_preview_rot = {350, 315},
+				_anims = {
+					idle = {x = 24, y = 27},
+					bumpy = {x = 24, y = 32},
+					falling = {x = 33, y = 41},
+				},
+				["2022"] = "server_cosmetics_hallows_hat.png",
+				["2023"] = "server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:purple)",
 			}
 		}
 	}
@@ -38,7 +59,7 @@ local function include(file)
 	dofile(minetest.get_modpath(minetest.get_current_modname()).."/"..file)
 end
 
-include("santa_hat.lua")
+include("hat.lua")
 
 local hatted = {}
 local function update_entity_cosmetics(player, current)
@@ -52,10 +73,13 @@ local function update_entity_cosmetics(player, current)
 		hatted[pname] = nil
 	end
 
-	if current.santa_hat then
-		local hat = minetest.add_entity(player:get_pos(), "server_cosmetics:santa_hat")
-		hat:set_properties({textures = current.santa_hat})
+	if current.santa_hat or current.hallows_hat then
+		local hatname = current.santa_hat and "santa_hat" or "hallows_hat"
+		local hat = minetest.add_entity(player:get_pos(), "server_cosmetics:hat")
+
 		hat:set_attach(player, "Head", vector.new(0, 2, 0))
+		hat:set_properties({textures = {current[hatname]}})
+		hat:get_luaentity().animr = server_cosmetics.cosmetics.entity_cosmetics[hatname]._anims
 
 		hatted[pname] = hat
 	end
@@ -75,6 +99,8 @@ function ctf_cosmetics.get_clothing_texture(player, texture, ...)
 	if texture == "skin" then
 		return "server_cosmetics_skin.png"
 	elseif texture == "santa_hat" then
+		return false
+	elseif texture == "hallows_hat" then
 		return false
 	end
 

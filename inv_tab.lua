@@ -16,6 +16,7 @@ sfinv.register_page("server_cosmetics:customize", {
 				mesh = props.mesh,
 				texture = ctf_cosmetics.get_colored_skin(player, pteam and ctf_teams.team[pteam].color),
 				anim_range = walk_anim,
+				rotation = {0, 160},
 			}
 		}
 
@@ -77,7 +78,8 @@ sfinv.register_page("server_cosmetics:customize", {
 						table.insert(models, {
 							mesh = cosmetics._model,
 							texture = current[ctype] or cosmetics[available_cosmetics[1]],
-							anim_range = cosmetics._anim_range or {x = 1, y = 1},
+							anim_range = (cosmetics._anims and cosmetics._anims.idle) or {x = 1, y = 1},
+							rotation = cosmetics._preview_rot or {0, 0},
 						})
 					end
 
@@ -111,7 +113,7 @@ sfinv.register_page("server_cosmetics:customize", {
 				formspec_version[4]
 				real_coordiantes[true]
 				box[0,-0.2;%f,%f;#00000055]
-				model[0,0;%f,%f;playerview;%s;%s;{0,160};;;%f,%f]
+				model[0,0;%f,%f;playerview;%s;%s;%d,%d;;;%f,%f]
 				image_button[0,%f;0.8,0.8;creative_prev_icon.png;model_prev;]
 				label[%f,%f;%d/%d]
 				image_button[%f,%f;0.8,0.8;creative_next_icon.png;model_next;]
@@ -125,8 +127,10 @@ sfinv.register_page("server_cosmetics:customize", {
 			--box
 			(FORMSIZE.x/2) - 0.8, FORMSIZE.y,
 			--model
-			(FORMSIZE.x/2), FORMSIZE.y + 0.2, models[context.model_selected].mesh,
+			(FORMSIZE.x/2), FORMSIZE.y + 0.2,
+				models[context.model_selected].mesh,
 				models[context.model_selected].texture,
+				models[context.model_selected].rotation[1], models[context.model_selected].rotation[2],
 				models[context.model_selected].anim_range.x, models[context.model_selected].anim_range.y,
 			--image_button
 			FORMSIZE.y-0.1,
