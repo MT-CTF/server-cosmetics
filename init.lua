@@ -137,3 +137,4 @@ function server_cosmetics.can_use(player, clothing, color)
 end
 
 include("inv_tab.lua")
+include("graves.lua")
