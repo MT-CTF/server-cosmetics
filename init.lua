@@ -53,6 +53,7 @@ server_cosmetics = {
 					bumpy = {x = 1, y = 14},
 					falling = {x = 15, y = 23},
 				},
+				date_start = 2021,
 				["2021"] = "server_cosmetics_santa_hat.png",
 				["2022"] = "server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:green)",
 				["2023"] = "server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:purple)",
@@ -67,6 +68,7 @@ server_cosmetics = {
 					bumpy = {x = 24, y = 32},
 					falling = {x = 33, y = 41},
 				},
+				date_start = 2022,
 				["2022"] = "server_cosmetics_hallows_hat.png",
 				["2023"] = "server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:purple)",
 			}
@@ -102,6 +104,7 @@ local function include(file)
 end
 
 include("hat.lua")
+include("commands.lua")
 
 local hatted = {}
 local function update_entity_cosmetics(player, current)
@@ -191,7 +194,8 @@ function server_cosmetics.can_use(player, clothing, color)
 
 	if (server_cosmetics.cosmetics.default_cosmetics[clothing] and
 	server_cosmetics.cosmetics.default_cosmetics[clothing][color]) or
-	meta:get_int("server_cosmetics:entity:"..clothing..":"..color) ~= 0 then
+	meta:get_int("server_cosmetics:entity:"..clothing..":"..color) ~= 0 or
+	meta:get_int("server_cosmetics:headwear:"..clothing..":"..color) ~= 0 then
 		return true
 	else
 		return false
