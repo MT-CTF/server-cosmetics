@@ -19,6 +19,13 @@ server_cosmetics = {
 				brown    = "#412d1b",
 			}
 		},
+		headwear = {
+			sunglasses = {
+				_prefix = "Wear ",
+				_description = "Sunglasses",
+				discord = "server_cosmetics_sunglasses.png"
+			}
+		},
 		entity_cosmetics = {
 			santa_hat = {
 				_prefix = "Wear ",
@@ -51,6 +58,8 @@ server_cosmetics = {
 	}
 }
 
+local santaent_cosmetics = {"santa_hat", "hallows_hat"}
+
 if os.date("%m/%d") == "04/01" then
 	server_cosmetics.cosmetics.default_cosmetics.skin.smurf = "#0085e8"
 end
@@ -73,8 +82,17 @@ local function update_entity_cosmetics(player, current)
 		hatted[pname] = nil
 	end
 
-	if current.santa_hat or current.hallows_hat then
-		local hatname = current.santa_hat and "santa_hat" or "hallows_hat"
+	local hatname = false
+	for key in pairs(current) do
+		for _, cosmetic in pairs(santaent_cosmetics) do
+			if key == cosmetic then
+				hatname = key
+				break
+			end
+		end
+	end
+
+	if hatname then
 		local hat = minetest.add_entity(player:get_pos(), "server_cosmetics:hat")
 
 		hat:set_attach(player, "Head", vector.new(0, 2, 0))
@@ -98,10 +116,12 @@ local old_get_clothing_texture = ctf_cosmetics.get_clothing_texture
 function ctf_cosmetics.get_clothing_texture(player, texture, ...)
 	if texture == "skin" then
 		return "server_cosmetics_skin.png"
-	elseif texture == "santa_hat" then
-		return false
-	elseif texture == "hallows_hat" then
-		return false
+	end
+
+	for _, cosmetic in pairs(santaent_cosmetics) do
+		if texture == cosmetic then
+			return false
+		end
 	end
 
 	return old_get_clothing_texture(player, texture, ...)
