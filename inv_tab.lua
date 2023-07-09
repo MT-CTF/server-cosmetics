@@ -25,14 +25,12 @@ sfinv.register_page("server_cosmetics:customize", {
 				local available_cosmetics = {}
 				local readable_available_cosmetics = {}
 				local convert = {}
-				local info_to_name = {}
 
 				for name, info in pairs(cosmetics) do
 					if name:sub(1, 1) ~= "_" and server_cosmetics.can_use(player, ctype, name) then
 						table.insert(available_cosmetics, name)
 						table.insert(readable_available_cosmetics, HumanReadable(name))
 						convert[HumanReadable(name)] = name
-						info_to_name[info] = name
 					end
 				end
 
@@ -48,7 +46,6 @@ sfinv.register_page("server_cosmetics:customize", {
 								minetest.log("warning", "Player "..pname.." is trying to exploit the cosmetic formspecs")
 								return true
 							end
-
 							ctf_cosmetics.set_extra_clothing(player, { [ctype] = selected_color })
 						else
 							ctf_cosmetics.set_extra_clothing(player, { _remove = {ctype} })
@@ -60,6 +57,7 @@ sfinv.register_page("server_cosmetics:customize", {
 
 					context["select_"..element_name] = function(fields, selected)
 						if not current[ctype] then return true end
+
 						selected = convert[selected] or available_cosmetics[1]
 
 						local selected_color = cosmetics[selected]
@@ -68,8 +66,7 @@ sfinv.register_page("server_cosmetics:customize", {
 							return true
 						end
 
-						if current[ctype] == selected_color then return true end -- Already changed
-
+						if current[ctype]._key == selected_color._key then return true end -- Already changed
 						ctf_cosmetics.set_extra_clothing(player, { [ctype] = selected_color })
 						player:set_properties({textures = {ctf_cosmetics.get_skin(player)}})
 					end
@@ -77,13 +74,13 @@ sfinv.register_page("server_cosmetics:customize", {
 					if cosmetics._model then
 						table.insert(models, {
 							mesh = cosmetics._model,
-							texture = current[ctype] or cosmetics[available_cosmetics[1]],
+							texture = (current[ctype] or cosmetics[available_cosmetics[1]]).color,
 							anim_range = (cosmetics._anims and cosmetics._anims.idle) or {x = 1, y = 1},
 							rotation = cosmetics._preview_rot or {0, 0},
 						})
 					end
 
-					local selected = current[ctype] and table.indexof(available_cosmetics, info_to_name[current[ctype]])
+					local selected = current[ctype] and table.indexof(available_cosmetics, current[ctype]._key)
 					if not selected or selected == -1 then
 						selected = 1
 					end

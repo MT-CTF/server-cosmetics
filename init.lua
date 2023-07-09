@@ -23,7 +23,23 @@ server_cosmetics = {
 			sunglasses = {
 				_prefix = "Wear ",
 				_description = "Sunglasses",
-				discord = "server_cosmetics_sunglasses.png"
+				_texture = "server_cosmetics_sunglasses.png",
+				blue = {
+					append = true,
+					color = "#0056ff^server_cosmetics_sunglasses_shine.png",
+				},
+				red = {
+					append = true,
+					color = "#ff2222^server_cosmetics_sunglasses_shine.png",
+				},
+				green = {
+					append = true,
+					color = "#22ff22^server_cosmetics_sunglasses_shine.png",
+				},
+				black = {
+					append = true,
+					color = "#000000^server_cosmetics_sunglasses_shine.png",
+				},
 			}
 		},
 		entity_cosmetics = {
@@ -58,11 +74,28 @@ server_cosmetics = {
 	}
 }
 
-local santaent_cosmetics = {"santa_hat", "hallows_hat"}
-
 if os.date("%m/%d") == "04/01" then
 	server_cosmetics.cosmetics.default_cosmetics.skin.smurf = "#0085e8"
 end
+
+minetest.after(0, function()
+	for category, contents in pairs(server_cosmetics.cosmetics) do
+		for ctype, cosmetics in pairs(contents) do
+			for name, info in pairs(cosmetics) do
+				if name:sub(1, 1) ~= "_" then
+					if type(info) == "table" then
+						server_cosmetics.cosmetics[category][ctype][name]._key = name
+					elseif type(info) == "string" then
+						server_cosmetics.cosmetics[category][ctype][name] = {
+							_key = name,
+							color = info,
+						}
+					end
+				end
+			end
+		end
+	end
+end)
 
 local function include(file)
 	dofile(minetest.get_modpath(minetest.get_current_modname()).."/"..file)
@@ -84,7 +117,7 @@ local function update_entity_cosmetics(player, current)
 
 	local hatname = false
 	for key in pairs(current) do
-		for _, cosmetic in pairs(santaent_cosmetics) do
+		for cosmetic in pairs(server_cosmetics.cosmetics.entity_cosmetics) do
 			if key == cosmetic then
 				hatname = key
 				break
@@ -96,7 +129,7 @@ local function update_entity_cosmetics(player, current)
 		local hat = minetest.add_entity(player:get_pos(), "server_cosmetics:hat")
 
 		hat:set_attach(player, "Head", vector.new(0, 2, 0))
-		hat:set_properties({textures = {current[hatname]}})
+		hat:set_properties({textures = {current[hatname].color}})
 		hat:get_luaentity().animr = server_cosmetics.cosmetics.entity_cosmetics[hatname]._anims
 
 		hatted[pname] = hat
@@ -118,9 +151,15 @@ function ctf_cosmetics.get_clothing_texture(player, texture, ...)
 		return "server_cosmetics_skin.png"
 	end
 
-	for _, cosmetic in pairs(santaent_cosmetics) do
+	for cosmetic in pairs(server_cosmetics.cosmetics.entity_cosmetics) do
 		if texture == cosmetic then
 			return false
+		end
+	end
+
+	for cosmetic in pairs(server_cosmetics.cosmetics.headwear) do
+		if texture == cosmetic then
+			return server_cosmetics.cosmetics.headwear[cosmetic]._texture
 		end
 	end
 
@@ -154,6 +193,53 @@ function server_cosmetics.can_use(player, clothing, color)
 	else
 		return false
 	end
+end
+
+-- Legacy cosmetic format conversion
+local old_get_extra_clothing = ctf_cosmetics.get_extra_clothing
+function ctf_cosmetics.get_extra_clothing(player, ...)
+	local pmeta = PlayerObj(player):get_meta()
+	local meta = pmeta:get_string("ctf_cosmetics:extra_clothing")
+
+	if meta ~= "" then
+		meta = minetest.deserialize(meta)
+
+		for costype, color in pairs(meta) do
+			if type(color) == "string" then
+				local breakout = false
+
+				for category, contents in pairs(server_cosmetics.cosmetics) do
+					for ctype, cosmetics in pairs(contents) do
+						for name, info in pairs(cosmetics) do
+							if name:sub(1, 1) ~= "_" then
+								if info.color == color then
+									meta[costype] = info
+									color = info
+									breakout = true
+									break
+								end
+							end
+						end
+						if breakout then break end
+					end
+					if breakout then break end
+				end
+
+				if not breakout then -- couldn't find the cosmetic, but it's in the wrong format, so remove it
+					meta[costype] = nil
+				end
+			end
+
+			-- Remove cosmetics players can no longer use
+			if meta[costype] and not server_cosmetics.can_use(player, costype, color._key) then
+				meta[costype] = nil
+			end
+		end
+
+		pmeta:set_string("ctf_cosmetics:extra_clothing", minetest.serialize(meta))
+	end
+
+	return old_get_extra_clothing(player, ...)
 end
 
 include("inv_tab.lua")
