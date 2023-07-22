@@ -181,6 +181,9 @@ minetest.register_on_joinplayer(function(player)
 	minetest.after(1, update_entity_cosmetics, player:get_player_name(), current)
 end)
 
+-- Used for testing with //lua
+-- local ocu = server_cosmetics.can_use function server_cosmetics.can_use(p, ...) if p:get_player_name() == "LandarVargan" then return true else return ocu(p, ...) end end
+
 function server_cosmetics.can_use(player, clothing, color)
 	if not color then return false end
 
