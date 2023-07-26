@@ -13,7 +13,7 @@ end
 local cosmetic_keys = {}
 
 for name, data in pairs(server_cosmetics.cosmetics.entity_cosmetics) do
-	local date = data.date_start
+	local date = data._date_start
 	if date then
 		while data[tostring(date)] do
 			table.insert(cosmetic_keys, "server_cosmetics:entity:"..name..":"..tostring(date))
