@@ -211,6 +211,8 @@ minetest.register_on_joinplayer(function(player)
 
 		transfer_queue[name] = nil
 
+		save_transfer_queue()
+
 		minetest.chat_send_player(name, minetest.colorize("purple", "You have received new cosmetics!"))
 	end
 end)
