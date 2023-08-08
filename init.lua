@@ -178,7 +178,7 @@ minetest.register_on_joinplayer(function(player)
 			eyes = server_cosmetics.cosmetics.default_cosmetics.eyes["blue"],
 		})
 
-		player:set_properties({textures = {ctf_cosmetics.get_skin(player)}})
+		player_api.set_texture(player, 1, ctf_cosmetics.get_skin(player))
 	end
 
 	minetest.after(1, update_entity_cosmetics, player:get_player_name(), current)

@@ -52,7 +52,7 @@ sfinv.register_page("server_cosmetics:customize", {
 							current[ctype] = nil
 						end
 
-						player:set_properties({textures = {ctf_cosmetics.get_skin(player)}})
+						player_api.set_texture(player, 1, ctf_cosmetics.get_skin(player))
 					end
 
 					context["select_"..element_name] = function(fields, selected)
@@ -68,7 +68,7 @@ sfinv.register_page("server_cosmetics:customize", {
 
 						if current[ctype]._key == selected_color._key then return true end -- Already changed
 						ctf_cosmetics.set_extra_clothing(player, { [ctype] = selected_color })
-						player:set_properties({textures = {ctf_cosmetics.get_skin(player)}})
+						player_api.set_texture(player, 1, ctf_cosmetics.get_skin(player))
 					end
 
 					if cosmetics._model then
