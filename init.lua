@@ -58,6 +58,16 @@ server_cosmetics = {
 				["2022"] = "server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:green)",
 				["2023"] = "server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:purple)",
 			},
+			crown = {
+				_prefix = "Wear ",
+				_description = "Crown",
+				_model = "server_cosmetics_hat.b3d",
+				_preview_rot = {350, 315},
+				_anims = {
+					idle = {x = 1, y = 1},
+				},
+				normal = "server_cosmetics_crown.png",
+			},
 			hallows_hat = {
 				_prefix = "Wear ",
 				_description = "Hallows Hat",
@@ -251,3 +261,4 @@ end
 
 include("inv_tab.lua")
 include("graves.lua")
+include("ranking_reset.lua")

@@ -20,6 +20,12 @@ for name, data in pairs(server_cosmetics.cosmetics.entity_cosmetics) do
 
 			date = date + 1
 		end
+	else
+		for k, v in pairs(data) do
+			if k:sub(1, 1) ~= "_" then
+				table.insert(cosmetic_keys, "server_cosmetics:entity:"..name..":"..k)
+			end
+		end
 	end
 end
 
@@ -45,7 +51,19 @@ local transfer_queue = get_table(mods:get_string("transfer_queue"))
 }
 --]]
 
-local function save_transfer_queue()
+function server_cosmetics.add_transfers(pname, cosmetics)
+	if transfer_queue[pname] then
+		for _, cos in pairs(cosmetics) do
+			if not table.indexof(transfer_queue[pname], cos) then
+				table.insert(transfer_queue[pname], cos)
+			end
+		end
+	else
+		transfer_queue[pname] = cosmetics
+	end
+end
+
+function server_cosmetics.save_transfer_queue()
 	mods:set_string("transfer_queue", minetest.serialize(transfer_queue))
 end
 
@@ -130,11 +148,11 @@ minetest.register_chatcommand("cosmetics", {
 				if transfer_queue[playername] then
 					table.insert(transfer_queue[playername], cosmetic)
 
-					save_transfer_queue()
+					server_cosmetics.save_transfer_queue()
 				else
 					transfer_queue[playername] = {cosmetic}
 
-					save_transfer_queue()
+					server_cosmetics.save_transfer_queue()
 				end
 
 				minetest.log("action", "Queued cosmetic "..dump(cosmetic).." to be given to player "..playername..
@@ -161,7 +179,7 @@ minetest.register_chatcommand("cosmetics", {
 							transfer_queue[playername] = nil
 						end
 
-						save_transfer_queue()
+						server_cosmetics.save_transfer_queue()
 
 						minetest.log("action", "Removed cosmetic "..dump(cosmetic).." from player "..playername.."'s cosmetic queue")
 						return true, "Removed cosmetic "..dump(cosmetic).." from player "..playername.."'s cosmetic queue"
@@ -211,7 +229,7 @@ minetest.register_on_joinplayer(function(player)
 
 		transfer_queue[name] = nil
 
-		save_transfer_queue()
+		server_cosmetics.save_transfer_queue()
 
 		minetest.chat_send_player(name, minetest.colorize("purple", "You have received new cosmetics!"))
 	end

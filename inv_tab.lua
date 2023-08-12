@@ -110,7 +110,7 @@ sfinv.register_page("server_cosmetics:customize", {
 				formspec_version[4]
 				real_coordiantes[true]
 				box[0,-0.2;%f,%f;#00000055]
-				model[0,0;%f,%f;playerview;%s;%s;%d,%d;;;%f,%f]
+				model[0,0;%f,%f;playerview;%s;%s,blank.png;%d,%d;;;%f,%f]
 				image_button[0,%f;0.8,0.8;creative_prev_icon.png;model_prev;]
 				label[%f,%f;%d/%d]
 				image_button[%f,%f;0.8,0.8;creative_next_icon.png;model_next;]

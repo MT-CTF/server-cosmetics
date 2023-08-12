@@ -26,10 +26,10 @@ minetest.register_entity("server_cosmetics:hat", {
 		local movement = vector.length(vel)
 
 		if movement ~= 0 then
-			if vel.y <= -12 then
+			if self.animr.falling and vel.y <= -12 then
 				self.object:set_animation(self.animr.falling, 40)
 				return
-			elseif movement ~= vel.y then
+			elseif self.animr.bumpy and movement ~= vel.y then
 				self.object:set_animation(self.animr.bumpy, 16)
 				return
 			end
