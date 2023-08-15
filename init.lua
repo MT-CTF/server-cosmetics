@@ -54,19 +54,9 @@ server_cosmetics = {
 					falling = {x = 15, y = 23},
 				},
 				_date_start = 2021,
-				["2021"] = "server_cosmetics_santa_hat.png",
-				["2022"] = "server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:green)",
-				["2023"] = "server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:purple)",
-			},
-			crown = {
-				_prefix = "Wear ",
-				_description = "Crown",
-				_model = "server_cosmetics_hat.b3d",
-				_preview_rot = {350, 315},
-				_anims = {
-					idle = {x = 1, y = 1},
-				},
-				normal = "server_cosmetics_crown.png",
+				["2021"] = {"server_cosmetics_santa_hat.png"},
+				["2022"] = {"server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:green)"},
+				["2023"] = {"server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:purple)"},
 			},
 			hallows_hat = {
 				_prefix = "Wear ",
@@ -79,9 +69,29 @@ server_cosmetics = {
 					falling = {x = 33, y = 41},
 				},
 				_date_start = 2022,
-				["2022"] = "server_cosmetics_hallows_hat.png",
-				["2023"] = "server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:purple)",
-			}
+				["2022"] = {"server_cosmetics_hallows_hat.png"},
+				["2023"] = {"server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:purple)"},
+			},
+			crown = {
+				_prefix = "Wear ",
+				_description = "Crown",
+				_model = "server_cosmetics_hat.b3d",
+				_preview_rot = {350, 315},
+				_anims = {
+					idle = {x = 1, y = 1},
+				},
+				["normal"] = {"server_cosmetics_crown.png"},
+			},
+			party_hat = {
+				_prefix = "Wear ",
+				_description = "Party Hat",
+				_model = "server_cosmetics_hat.b3d",
+				_preview_rot = {350, 315},
+				_anims = {
+					idle = {x = 1, y = 1},
+				},
+				["anniversary"] = {"blank.png", "server_cosmetics_party_hat.png"},
+			},
 		}
 	}
 }
@@ -96,6 +106,13 @@ minetest.after(0, function()
 			for name, info in pairs(cosmetics) do
 				if name:sub(1, 1) ~= "_" then
 					if type(info) == "table" then
+						if info[1] then
+							server_cosmetics.cosmetics[category][ctype][name].color = {
+								[1] = info[1],
+								[2] = info[2] or "blank.png",
+							}
+						end
+
 						server_cosmetics.cosmetics[category][ctype][name]._key = name
 					elseif type(info) == "string" then
 						server_cosmetics.cosmetics[category][ctype][name] = {
@@ -142,7 +159,7 @@ local function update_entity_cosmetics(player, current)
 		local hat = minetest.add_entity(player:get_pos(), "server_cosmetics:hat")
 
 		hat:set_attach(player, "Head", vector.new(0, 2, 0))
-		hat:set_properties({textures = {current[hatname].color}})
+		hat:set_properties({textures = current[hatname].color})
 		hat:get_luaentity().animr = server_cosmetics.cosmetics.entity_cosmetics[hatname]._anims
 
 		hatted[pname] = hat

@@ -1,6 +1,32 @@
 local FORMSIZE = {x = 8, y = 4.5}
 local SCROLLBAR = {width = 0.3}
 
+-- This Function MIT by Rubenwardy
+
+--- Creates a scrollbaroptions for a scroll_container
+
+--
+
+-- @param visible_l the length of the scroll_container and scrollbar
+
+-- @param total_l length of the scrollable area
+
+-- @param scroll_factor as passed to scroll_container
+
+local function make_scrollbaroptions_for_scroll_container(visible_l, total_l, scroll_factor,arrows)
+
+	assert(total_l >= visible_l)
+
+	arrows = arrows or "default"
+
+	local thumb_size = (visible_l / total_l) * (total_l - visible_l)
+
+	local max = total_l - visible_l
+
+	return ("scrollbaroptions[min=0;max=%f;thumbsize=%f;arrows=%s]"):format(max / scroll_factor, thumb_size / scroll_factor,arrows)
+
+end
+
 sfinv.register_page("server_cosmetics:customize", {
 	title = "Customize",
 	get = function(self, player, context)
@@ -14,7 +40,7 @@ sfinv.register_page("server_cosmetics:customize", {
 		local models = {
 			{
 				mesh = props.mesh,
-				texture = ctf_cosmetics.get_colored_skin(player, pteam and ctf_teams.team[pteam].color),
+				texture = {ctf_cosmetics.get_colored_skin(player, pteam and ctf_teams.team[pteam].color), "blank.png"},
 				anim_range = walk_anim,
 				rotation = {0, 160},
 			}
@@ -110,12 +136,12 @@ sfinv.register_page("server_cosmetics:customize", {
 				formspec_version[4]
 				real_coordiantes[true]
 				box[0,-0.2;%f,%f;#00000055]
-				model[0,0;%f,%f;playerview;%s;%s,blank.png;%d,%d;;;%f,%f]
+				model[0,0;%f,%f;playerview;%s;%s,%s;%d,%d;;;%f,%f]
 				image_button[0,%f;0.8,0.8;creative_prev_icon.png;model_prev;]
 				label[%f,%f;%d/%d]
 				image_button[%f,%f;0.8,0.8;creative_next_icon.png;model_next;]
 
-				scrollbaroptions[min=0;max=%f]
+				%s
 				scrollbar[%f,-0.1;%f,%f;vertical;cosmetics_scrollbar;%f]
 				scroll_container[%f,0.3;%f,%f;cosmetics_scrollbar;vertical;0.1]
 					%s
@@ -126,7 +152,8 @@ sfinv.register_page("server_cosmetics:customize", {
 			--model
 			(FORMSIZE.x/2), FORMSIZE.y + 0.2,
 				models[context.model_selected].mesh,
-				models[context.model_selected].texture,
+				models[context.model_selected].texture[1] or "blank.png",
+				models[context.model_selected].texture[2] or "blank.png",
 				models[context.model_selected].rotation[1], models[context.model_selected].rotation[2],
 				models[context.model_selected].anim_range.x, models[context.model_selected].anim_range.y,
 			--image_button
@@ -137,7 +164,7 @@ sfinv.register_page("server_cosmetics:customize", {
 			(FORMSIZE.x/2) - 1.39, FORMSIZE.y-0.1,
 
 			--scrollbaroptions
-			pos * 6,
+			make_scrollbaroptions_for_scroll_container(FORMSIZE.y - 0.3, pos + 0.7, 0.1),
 			--scrollbar
 			FORMSIZE.x-SCROLLBAR.width, SCROLLBAR.width, FORMSIZE.y + 0.6, context.scrollbar or 0,
 			--scroll_container
