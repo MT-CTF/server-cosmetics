@@ -264,6 +264,14 @@ function ctf_cosmetics.get_extra_clothing(player, ...)
 				end
 			end
 
+			-- Add compat for two entity materials
+			if meta[costype] then
+				if type(color) == "string" and costype == "santa_hat" or costype == "hallows_hat" then
+					color.color = {color.color, "blank.png"}
+					meta[costype] = color
+				end
+			end
+
 			-- Remove cosmetics players can no longer use
 			if meta[costype] and not server_cosmetics.can_use(player, costype, color._key) then
 				meta[costype] = nil
