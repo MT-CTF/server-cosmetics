@@ -238,7 +238,11 @@ function ctf_cosmetics.get_extra_clothing(player, ...)
 	if meta ~= "" then
 		meta = minetest.deserialize(meta)
 
-		if not meta then meta = {} end
+		if not meta then
+			pmeta:set_string("ctf_cosmetics:extra_clothing", "")
+
+			return old_get_extra_clothing(player, ...)
+		end
 
 		for costype, color in pairs(meta) do
 			if type(color) == "string" then
