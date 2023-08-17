@@ -245,6 +245,24 @@ function ctf_cosmetics.get_extra_clothing(player, ...)
 		end
 
 		for costype, color in pairs(meta) do
+
+			-- Add compat for two entity materials
+			if meta[costype] and costype == "santa_hat" or costype == "hallows_hat" then
+				if type(color.color) == "string" then
+					color.color = {color.color, "blank.png"}
+					meta[costype] = color
+				elseif type(color.color) == "table" and color.color[1] and color.color[1][1] then
+					local temp = color.color
+
+					repeat
+						temp = temp[1]
+					until not temp[1][1]
+
+					color.color = temp
+					meta[costype].color = temp
+				end
+			end
+
 			if type(color) == "string" then
 				local breakout = false
 
@@ -267,14 +285,6 @@ function ctf_cosmetics.get_extra_clothing(player, ...)
 
 				if not breakout then -- couldn't find the cosmetic, but it's in the wrong format, so remove it
 					meta[costype] = nil
-				end
-			end
-
-			-- Add compat for two entity materials
-			if meta[costype] then
-				if type(color.color) == "string" and costype == "santa_hat" or costype == "hallows_hat" then
-					color.color = {color.color, "blank.png"}
-					meta[costype] = color
 				end
 			end
 
