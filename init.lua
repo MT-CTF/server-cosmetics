@@ -69,7 +69,7 @@ server_cosmetics = {
 					falling = {x = 33, y = 41},
 				},
 				_date_start = 2022,
-				["2022"] = {"server_cosmetics_hallows_hat.png"},
+				["2022"] = {"server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:#222)"},
 				["2023"] = {"server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:purple)"},
 			},
 			crown = {
