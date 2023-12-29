@@ -40,6 +40,10 @@ server_cosmetics = {
 					append = true,
 					color = "#000000^server_cosmetics_sunglasses_shine.png",
 				},
+				tournament = {
+					append = true,
+					color = "#000000^(server_cosmetics_sunglasses_shine.png^[multiply:#ffe346)",
+				},
 			}
 		},
 		entity_cosmetics = {
