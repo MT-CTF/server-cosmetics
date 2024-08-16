@@ -94,7 +94,11 @@ function server_cosmetics.add_transfers(pname, cosmetics)
 	end
 
 	for cos, action in pairs(cosmetics) do
-		transfer_queue[pname][cos] = action
+		if action == "give" or action == "take" then
+			transfer_queue[pname][cos] = action
+		else -- transfer queue v1
+			transfer_queue[pname][action] = "give"
+		end
 	end
 end
 
