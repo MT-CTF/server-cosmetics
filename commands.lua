@@ -191,7 +191,8 @@ minetest.register_chatcommand("cosmetics", {
 			local player = minetest.get_player_by_name(playername)
 
 			if not player then
-				if transfer_queue[playername] and params[1] ~= transfer_queue[playername][cosmetic] then
+				if transfer_queue[playername] and
+				transfer_queue[playername][cosmetic] and params[1] ~= transfer_queue[playername][cosmetic] then
 					local msg = "Removed cosmetic "..dump(cosmetic).." from player "..playername.."'s cosmetic queue"
 
 					transfer_queue[playername][cosmetic] = nil
