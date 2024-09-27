@@ -61,6 +61,7 @@ server_cosmetics = {
 				["2021"] = {"server_cosmetics_santa_hat.png"},
 				["2022"] = {"server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:green)"},
 				["2023"] = {"server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:purple)"},
+				["2024"] = {"server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:blue)"},
 			},
 			hallows_hat = {
 				_prefix = "Wear ",
@@ -73,8 +74,9 @@ server_cosmetics = {
 					falling = {x = 33, y = 41},
 				},
 				_date_start = 2022,
-				["2022"] = {"server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:#222)"},
+				["2022"] = {"server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:#333)"},
 				["2023"] = {"server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:purple)"},
+				["2024"] = {"server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:red)"},
 			},
 			crown = {
 				_prefix = "Wear ",
