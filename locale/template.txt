@@ -1,0 +1,26 @@
+# textdomain: server_cosmetics
+
+Modify=
+Wear=
+Sunglasses=
+Christmas Hat=
+Hallows Hat=
+Crown=
+Party Hat=
+Allows doing things like transferring/giving cosmetics=
+Manage cosmetics=
+<show/s> [playername] | <give/g|take/t> <playername> <cosmetic>=
+Available cosmetics=
+Cosmetics of player=
+Player has no managable cosmetics=
+Cosmetic queue for player=
+Player=
+has no cosmetics queued=
+You need to supply a player to manage the cosmetics of=
+You need to specify a cosmetic to give/take=
+Couldn't find any cosmetic matching=
+There are multiple cosmetics that match=
+please be more specific=
+Your cosmetics have been changed! @1 added, @2 removed=
+Customize=
+Enable=

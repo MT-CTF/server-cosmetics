@@ -1,3 +1,5 @@
+local S = minetest.get_translator(minetest.get_current_modname())
+
 server_cosmetics = {
 	cosmetics = {
 		default_cosmetics = {
@@ -13,7 +15,7 @@ server_cosmetics = {
 				brown = "#2D1400",
 			},
 			skin = {
-				_prefix = "Modify ",
+				_prefix = S("Modify") .. " ",
 				tan      = "#cca586",
 				dark_tan = "#6d4832",
 				brown    = "#412d1b",
@@ -21,8 +23,8 @@ server_cosmetics = {
 		},
 		headwear = {
 			sunglasses = {
-				_prefix = "Wear ",
-				_description = "Sunglasses",
+				_prefix = S("Wear") .. " ",
+				_description = S("Sunglasses"),
 				_texture = "server_cosmetics_sunglasses.png",
 				blue = {
 					append = true,
@@ -48,8 +50,8 @@ server_cosmetics = {
 		},
 		entity_cosmetics = {
 			santa_hat = {
-				_prefix = "Wear ",
-				_description = "Christmas Hat",
+				_prefix = S("Wear") .. " ",
+				_description = S("Christmas Hat"),
 				_model = "server_cosmetics_hat.b3d",
 				_preview_rot = {350, 315},
 				_anims = {
@@ -64,8 +66,8 @@ server_cosmetics = {
 				["2024"] = {"server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:blue)"},
 			},
 			hallows_hat = {
-				_prefix = "Wear ",
-				_description = "Hallows Hat",
+				_prefix = S("Wear") .. " ",
+				_description = S("Hallows Hat"),
 				_model = "server_cosmetics_hat.b3d",
 				_preview_rot = {350, 315},
 				_anims = {
@@ -79,8 +81,8 @@ server_cosmetics = {
 				["2024"] = {"server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:red)"},
 			},
 			crown = {
-				_prefix = "Wear ",
-				_description = "Crown",
+				_prefix = S("Wear") .. " ",
+				_description = S("Crown"),
 				_model = "server_cosmetics_hat.b3d",
 				_preview_rot = {350, 315},
 				_anims = {
@@ -89,8 +91,8 @@ server_cosmetics = {
 				["normal"] = {"server_cosmetics_crown.png"},
 			},
 			party_hat = {
-				_prefix = "Wear ",
-				_description = "Party Hat",
+				_prefix = S("Wear") .. " ",
+				_description = S("Party Hat"),
 				_model = "server_cosmetics_hat.b3d",
 				_preview_rot = {350, 315},
 				_anims = {
