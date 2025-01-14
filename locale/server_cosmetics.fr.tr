@@ -1,0 +1,26 @@
+# textdomain: server_cosmetics
+
+Modify=Modifier
+Wear=Porter
+Sunglasses=des lunettes
+Christmas Hat=un chapeau de noël
+Hallows Hat=un chapeau hanté
+Crown=une couronne
+Party Hat=un chapeau festif
+Allows doing things like transferring/giving cosmetics=
+Manage cosmetics=Gère les cosmétiques
+<show/s> [playername] | <give/g|take/t> <playername> <cosmetic>=<show/s> [joueur] | <give/g|take/t> <joueur> <cosmétique>
+Available cosmetics=Cosmétiques disponibles
+Cosmetics of player=Cosmétiques du joueur
+Player has no managable cosmetics=Le joueur n'a pas de cosmétiques gérables
+Cosmetic queue for player=File d'attente des cosmétiques pour le joueur
+Player=Le joueur
+has no cosmetics queued=n'a pas de cosmétiques en attente
+You need to supply a player to manage the cosmetics of=Vous devez indiquer un joueur dont gérer les cosmétiques
+You need to specify a cosmetic to give/take=Vous devez spécifier un cosmétique à donner/retirer
+Couldn't find any cosmetic matching=Impossible de trouver un cosmétique correspondant
+There are multiple cosmetics that match=Plusieurs cosmétiques correspondent
+please be more specific=veuillez être plus précis
+Your cosmetics have been changed! @1 added, @2 removed=Vos cosmétiques ont été modifiés! @1 ajouté(s), @2 supprimé(s)
+Customize=Apparence
+Enable=Activer
