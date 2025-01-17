@@ -1,6 +1,8 @@
 local FORMSIZE = {x = 8, y = 4.5}
 local SCROLLBAR = {width = 0.3}
 
+local S = minetest.get_translator(minetest.get_current_modname())
+
 -- This Function MIT by Rubenwardy
 
 --- Creates a scrollbaroptions for a scroll_container
@@ -28,7 +30,7 @@ local function make_scrollbaroptions_for_scroll_container(visible_l, total_l, sc
 end
 
 sfinv.register_page("server_cosmetics:customize", {
-	title = "Customize",
+	title = S("Customize"),
 	get = function(self, player, context)
 		local pname = player:get_player_name()
 		local current = ctf_cosmetics.get_extra_clothing(player)
@@ -115,7 +117,7 @@ sfinv.register_page("server_cosmetics:customize", {
 						dropdown[0,%f;%f;select_%s;%s;%d]
 					]], cosmetic_forms,
 						--checkbox
-						pos, element_name, (cosmetics._prefix or "Enable ") .. (cosmetics._description or HumanReadable(ctype)),
+						pos, element_name, (cosmetics._prefix or S("Enable")).. " " .. (cosmetics._description or HumanReadable(ctype)),
 							current[ctype] and "true" or "false",
 						--dropdown
 						pos + 0.8, (FORMSIZE.x/2),

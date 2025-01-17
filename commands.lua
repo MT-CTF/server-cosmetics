@@ -1,6 +1,8 @@
 local mods = minetest.get_mod_storage()
 local TRANSFER_QUEUE_VERSION = 2
 
+local S = minetest.get_translator(minetest.get_current_modname())
+
 local function get_table(x)
 	if x and x ~= "" then
 		return minetest.deserialize(x)
@@ -43,7 +45,7 @@ minetest.log("action", "Loaded cosmetics: "..dump(cosmetic_keys))
 -- Register the priv and its commmand
 
 minetest.register_privilege("cosmetic_manager", {
-	description = "Allows doing things like transferring/giving cosmetics",
+	description = S("Allows doing things like transferring/giving cosmetics"),
 })
 
 local queue_version = mods:get_int("transfer_queue_version")
@@ -103,8 +105,8 @@ function server_cosmetics.add_transfers(pname, cosmetics)
 end
 
 minetest.register_chatcommand("cosmetics", {
-	description = "Manage cosmetics",
-	params = "<show/s> [playername] | <give/g|take/t> <playername> <cosmetic>",
+	description = S("Manage cosmetics"),
+	params = S("<show/s> [playername] | <give/g|take/t> <playername> <cosmetic>"),
 	privs = {cosmetic_manager = true},
 	func = function(name, params)
 		params = string.split(params, "%s", false, 2, true)
@@ -116,7 +118,7 @@ minetest.register_chatcommand("cosmetics", {
 	-- /cosmetics show [playername]
 		if params[1] == "show" or params[1] == "s" then
 			if not playername then
-				return true, "Available cosmetics:\n"..table.concat(cosmetic_keys, " |\t")
+				return true, S("Available cosmetics") .. ":\n" ..table.concat(cosmetic_keys, " |\t")
 			else
 				local player = minetest.get_player_by_name(playername)
 
@@ -131,15 +133,15 @@ minetest.register_chatcommand("cosmetics", {
 					end
 
 					if #out > 0 then
-						return true, "Cosmetics of player "..playername..":\n"..table.concat(out, " |\t")
+						return true, S("Cosmetics of player").." "..playername..":\n"..table.concat(out, " |\t")
 					else
-						return true, "Player has no managable cosmetics"
+						return true, S("Player has no managable cosmetics")
 					end
 				else
 					if transfer_queue[playername] then
-						return true, "Cosmetic queue for player "..playername..":\n"..dump(transfer_queue[playername])
+						return true, S("Cosmetic queue for player").." "..playername..":\n"..dump(transfer_queue[playername])
 					else
-						return true, "Player "..playername.." has no cosmetics queued"
+						return true, S("Player").." "..playername.." "..S("has no cosmetics queued")
 					end
 				end
 			end
@@ -151,12 +153,12 @@ minetest.register_chatcommand("cosmetics", {
 
 	-- Verify a player was given
 		if not playername then
-			return false, "You need to supply a player to manage the cosmetics of"
+			return false, S("You need to supply a player to manage the cosmetics of")
 		end
 
 	-- Verify a valid cosmetic param was given
 		if not params[3] then
-			return false, "You need to specify a cosmetic to give/take"
+			return false, S("You need to specify a cosmetic to give/take")
 		end
 
 		local cosmetic
@@ -168,10 +170,11 @@ minetest.register_chatcommand("cosmetics", {
 		end
 
 		if #matches <= 0 then
-			return false, "Couldn't find any cosmetic matching " .. dump(params[3])
+			return false, S("Couldn't find any cosmetic matching") .. " " .. dump(params[3])
 		elseif #matches > 1 then
-			return false, "There are multiple cosmetics that match " .. dump(params[3]) .. ", please be more specific:\n\t" ..
-					minetest.colorize("cyan", table.concat(matches, "\n\t"))
+			return false, S("There are multiple cosmetics that match") ..
+				" " .. dump(params[3]) .. ", " .. S("please be more specific")..":\n\t"..
+				minetest.colorize("cyan", table.concat(matches, "\n\t"))
 		else
 			cosmetic = matches[1]
 		end
@@ -271,9 +274,10 @@ minetest.register_on_joinplayer(function(player)
 		server_cosmetics.save_transfer_queue()
 
 		if gave_count + took_count > 0 then
-			minetest.chat_send_player(name, minetest.colorize("purple", (
-				"Your cosmetics have been changed! %d added, %d removed"
-			):format(gave_count, took_count)))
+			minetest.chat_send_player(name, minetest.colorize("purple",
+				 S("Your cosmetics have been changed! @1 added, @2 removed",
+				gave_count, took_count))
+			)
 		end
 	end
 end)
