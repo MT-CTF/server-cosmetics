@@ -123,11 +123,10 @@ minetest.register_chatcommand("cosmetics", {
 				local player = minetest.get_player_by_name(playername)
 
 				if player then
-					local meta = player:get_meta()
 					local out = {}
 
 					for k, v in pairs(cosmetic_keys) do
-						if meta:get_int(v) ~= 0 then
+						if ctf_core.meta_get_int(playername, v) ~= 0 then
 							table.insert(out, v)
 						end
 					end
@@ -221,7 +220,7 @@ minetest.register_chatcommand("cosmetics", {
 						" next time they log in")
 				return true, "Queued cosmetic "..dump(cosmetic).." to be "..action.." player "..playername.." next time they log in"
 			else
-				player:get_meta():set_int(cosmetic, (params[1] == "give") and 1 or 0)
+				ctf_core.meta_set_int(playername, cosmetic, (params[1] == "give") and 1 or 0)
 
 				minetest.log("action", action_past[1].." cosmetic "..dump(cosmetic).." "..action_past[2].." player "..playername)
 				return true, action_past[1].." cosmetic "..dump(cosmetic).." "..action_past[2].." player "..playername
@@ -248,16 +247,15 @@ minetest.register_on_joinplayer(function(player)
 	local transfer = transfer_queue[name]
 
 	if transfer then
-		local meta = player:get_meta()
 		local gave_count = 0
 		local took_count = 0
 
 		for cosmetic, action in pairs(transfer) do
 			local set_to = (action == "give") and 1 or 0
-			local old = meta:get_int(cosmetic)
+			local old = ctf_core.meta_get_int(name, cosmetic)
 
 			if old ~= set_to then
-				meta:set_int(cosmetic, set_to)
+				ctf_core.meta_set_int(name, cosmetic, set_to)
 
 				if action == "give" then
 					gave_count = gave_count + 1

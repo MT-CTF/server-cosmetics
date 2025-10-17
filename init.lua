@@ -237,12 +237,12 @@ end)
 function server_cosmetics.can_use(player, clothing, color)
 	if not color then return false end
 
-	local meta = player:get_meta()
+	local pname = player:get_player_name()
 
 	if (server_cosmetics.cosmetics.default_cosmetics[clothing] and
 	server_cosmetics.cosmetics.default_cosmetics[clothing][color]) or
-	meta:get_int("server_cosmetics:entity:"..clothing..":"..color) ~= 0 or
-	meta:get_int("server_cosmetics:headwear:"..clothing..":"..color) ~= 0 then
+	ctf_core.meta_get_int(pname, "server_cosmetics:entity:"..clothing..":"..color) ~= 0 or
+	ctf_core.meta_get_int(pname, "server_cosmetics:headwear:"..clothing..":"..color) ~= 0 then
 		return true
 	else
 		return false
@@ -252,14 +252,14 @@ end
 -- Legacy cosmetic format conversion
 local old_get_extra_clothing = ctf_cosmetics.get_extra_clothing
 function ctf_cosmetics.get_extra_clothing(player, ...)
-	local pmeta = PlayerObj(player):get_meta()
-	local meta = pmeta:get_string("ctf_cosmetics:extra_clothing")
+	local pname = PlayerName(player)
+	local meta = ctf_core.meta_get_string(pname, "ctf_cosmetics:extra_clothing")
 
 	if meta ~= "" then
 		meta = minetest.deserialize(meta)
 
 		if not meta then
-			pmeta:set_string("ctf_cosmetics:extra_clothing", "")
+			ctf_core.meta_set_string(pname, "ctf_cosmetics:extra_clothing", "")
 
 			return old_get_extra_clothing(player, ...)
 		end
@@ -314,7 +314,7 @@ function ctf_cosmetics.get_extra_clothing(player, ...)
 			end
 		end
 
-		pmeta:set_string("ctf_cosmetics:extra_clothing", minetest.serialize(meta))
+		ctf_core.meta_set_string(pname, "ctf_cosmetics:extra_clothing", minetest.serialize(meta))
 	end
 
 	return old_get_extra_clothing(player, ...)
