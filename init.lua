@@ -93,6 +93,7 @@ server_cosmetics = {
 					idle = {x = 1, y = 1},
 				},
 				["normal"] = {"server_cosmetics_crown.png"},
+				["autumn"] = {"server_cosmetics_crown_autumn.png"},
 			},
 			party_hat = {
 				_prefix = S("Wear") .. " ",
