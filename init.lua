@@ -66,6 +66,7 @@ server_cosmetics = {
 				["2024"] = {"server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:blue)"},
 				-- ~Violet
 				["2025"] = {"server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:#cc0072)"},
+				["2026"] = {"server_cosmetics_santa_hat.png^(server_cosmetics_santa_hat_overlay.png^[multiply:yellow)"},
 			},
 			hallows_hat = {
 				_prefix = S("Wear") .. " ",
@@ -83,6 +84,7 @@ server_cosmetics = {
 				["2024"] = {"server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:red)"},
 				-- ~Kind of ghost-y
 				["2025"] = {"server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:cyan)"},
+				["2026"] = {"server_cosmetics_hallows_hat.png^(server_cosmetics_hallows_hat_overlay.png^[multiply:yellow)"},
 			},
 			crown = {
 				_prefix = S("Wear") .. " ",
